@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word of the Day Center</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            color: blue;
+        }
+
+        #word {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Word of the Day Center</h1>
+    <p id="word">Loading...</p>
+    <button id="changeButton">Change Word</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchWord();
+
+            document.getElementById('changeButton').addEventListener('click', function() {
+                fetch('/.netlify/functions/changeWord', {
+                    method: 'POST',
+                    body: JSON.stringify({ newWord: generateRandomWord() })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    fetchWord();
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+
+        function fetchWord() {
+            fetch('/.netlify/functions/changeWord')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('word').innerText = data.currentWord;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function generateRandomWord() {
+            const words = ['Goodbye', 'Hola', 'Bonjour', 'Ciao', 'Namaste'];
+            return words[Math.floor(Math.random() * words.length)];
+        }
+    </script>
+</body>
+</html>
